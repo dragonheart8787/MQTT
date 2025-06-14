@@ -1,0 +1,28 @@
+body {
+  background: #222;
+  color: white;
+  text-align: center;
+  font-family: sans-serif;
+  padding: 40px;
+}
+h1 {
+  font-size: 2.5em;
+}
+.buttons a {
+  display: inline-block;
+  background: #4CAF50;
+  color: white;
+  padding: 15px 30px;
+  margin: 20px;
+  text-decoration: none;
+  font-size: 1.2em;
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+.buttons a:hover {
+  background: #45a049;
+}
+canvas {
+  border: 3px solid #fff;
+  margin-top: 30px;
+}

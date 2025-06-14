@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Player 1</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script>
+const options = {
+  username: "hivemq.webclient.1749917567811",
+  password: "WCP4&k#<3G09bxncFYa>",
+  protocol: "wss",
+  port: 8884,
+  reconnectPeriod: 1000
+};
+const client = mqtt.connect("wss://hivemq.webclient.1749917567811:8884/mqtt", options);
+client.on("connect", () => {
+  console.log("✅ HiveMQ 已連線");
+  client.subscribe("game/shooting");
+});
+
+</head>
+<body>
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+<script>
+let canvas = document.getElementById("gameCanvas");
+let ctx = canvas.getContext("2d");
+
+let player1 = { x: 50, y: 180, color: "blue" };
+let bullets = [];
+let enemy = { x: 500, y: 180, color: "red" };
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowUp") player1.y -= 10;
+  if (e.key === "ArrowDown") player1.y += 10;
+  if (e.key === " ") {
+    bullets.push({ x: player1.x + 20, y: player1.y + 10 });
+    sendData(true);
+  } else {
+    sendData(false);
+  }
+});
+
+function sendData(fire) {
+  client.publish("game/shooting", JSON.stringify({
+    player: "p1",
+    x: player1.x,
+    y: player1.y,
+    fire: fire
+  }));
+}
+
+client.on("message", (topic, message) => {
+  const data = JSON.parse(message.toString());
+  if (data.player === "p2") {
+    enemy.x = data.x;
+    enemy.y = data.y;
+    if (data.fire) bullets.push({ x: data.x - 10, y: data.y + 10 });
+  }
+});
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = player1.color;
+  ctx.fillRect(player1.x, player1.y, 20, 20);
+  ctx.fillStyle = enemy.color;
+  ctx.fillRect(enemy.x, enemy.y, 20, 20);
+  ctx.fillStyle = "white";
+  bullets = bullets.filter(b => b.x >= 0 && b.x <= canvas.width);
+  bullets.forEach(b => {
+    b.x += (b.x < 300 ? 5 : -5);
+    ctx.fillRect(b.x, b.y, 6, 4);
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
