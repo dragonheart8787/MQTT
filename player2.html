@@ -12,9 +12,9 @@ const options = {
   port: 8884,
   reconnectPeriod: 1000
 };
-const client = mqtt.connect("wss://hivemq.webclient.1749917567811:8884/mqtt", options);
+const client = mqtt.connect("wss://af610356c6ec4e7791a802c7fd1cca77.s1.eu.hivemq.cloud:8884/mqtt", options);
 client.on("connect", () => {
-  console.log("✅ HiveMQ 已連線");
+  console.log("✅ HiveMQ Cloud 連線成功");
   client.subscribe("game/shooting");
 });
 
@@ -28,6 +28,11 @@ let ctx = canvas.getContext("2d");
 let player1 = { x: 500, y: 180, color: "blue" };
 let bullets = [];
 let enemy = { x: 500, y: 180, color: "red" };
+
+const client = mqtt.connect("wss://test.mosquitto.org:8081");
+client.on("connect", () => {
+  client.subscribe("game/shooting");
+});
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowUp") player1.y -= 10;
